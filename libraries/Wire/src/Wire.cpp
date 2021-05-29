@@ -384,5 +384,9 @@ bool TwoWire::busy(void){
   return ((i2cGetStatus(i2c) & 16 )==16);
 }
 
+#if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_WIRE)
 TwoWire Wire = TwoWire(0);
+#endif
+#if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_WIRE1)
 TwoWire Wire1 = TwoWire(1);
+#endif

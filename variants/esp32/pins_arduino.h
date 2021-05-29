@@ -14,8 +14,14 @@
 static const uint8_t TX = 1;
 static const uint8_t RX = 3;
 
+#ifdef XB_BOARD
+#include "xb_board_def.h"
+static const uint8_t SDA = I2C1_SDA;
+static const uint8_t SCL = I2C1_SCL;
+#else
 static const uint8_t SDA = 21;
 static const uint8_t SCL = 22;
+#endif
 
 static const uint8_t SS    = 5;
 static const uint8_t MOSI  = 23;
