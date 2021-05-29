@@ -2,9 +2,13 @@
 #define LWIP_OPEN_SRC
 #endif
 #include <functional>
+#include <xb_board_def.h>
+#ifdef XB_ETH
+#else
 #include <WiFiUdp.h>
-#include "ArduinoOTA.h"
 #include "ESPmDNS.h"
+#endif
+#include "ArduinoOTA.h"
 #include "MD5Builder.h"
 #include "Update.h"
 
@@ -128,13 +132,19 @@ void ArduinoOTAClass::begin() {
     if (!_hostname.length()) {
         char tmp[20];
         uint8_t mac[6];
+#ifdef XB_ETH
+#else
         WiFi.macAddress(mac);
+#endif
         sprintf(tmp, "esp32-%02x%02x%02x%02x%02x%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
         _hostname = tmp;
     }
     if(_mdnsEnabled){
+#ifdef XB_ETH
+#else
         MDNS.begin(_hostname.c_str());
         MDNS.enableArduino(_port, (_password.length() > 0));
+#endif
     }
     _initialized = true;
     _state = OTA_IDLE;
@@ -265,8 +275,11 @@ void ArduinoOTAClass::_runUpdate() {
     if (_progress_callback) {
         _progress_callback(0, _size);
     }
-
+#ifdef XB_ETH
+    EthernetClient client;
+#else
     WiFiClient client;
+#endif
     if (!client.connect(_ota_ip, _ota_port)) {
         if (_error_callback) {
             _error_callback(OTA_CONNECT_ERROR);
@@ -362,7 +375,10 @@ void ArduinoOTAClass::end() {
     _initialized = false;
     _udp_ota.stop();
     if(_mdnsEnabled){
+#ifdef XB_ETH
+#else
         MDNS.end();
+#endif
     }
     _state = OTA_IDLE;
     log_i("OTA server stopped.");
