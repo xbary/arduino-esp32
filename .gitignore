@@ -18,5 +18,3 @@ __vm/
 platform.sloeber.txt
 boards.sloeber.txt
 tools/mklittlefs
-/out/build/x64-Debug
-/tools/mkfatfs.exe
