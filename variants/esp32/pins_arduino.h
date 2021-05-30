@@ -16,6 +16,12 @@ static const uint8_t RX = 3;
 
 #ifdef XB_BOARD
 #include "xb_board_def.h"
+#ifndef I2C1_SDA
+#define I2C1_SDA 21
+#endif
+#ifndef I2C1_SCL
+#define I2C1_SCL 22
+#endif
 static const uint8_t SDA = I2C1_SDA;
 static const uint8_t SCL = I2C1_SCL;
 #else

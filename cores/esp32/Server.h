@@ -21,12 +21,18 @@
 #define server_h
 
 #include "Print.h"
+#ifdef XB_BOARD
+#include <xb_board_def.h>
+#endif
 
 class Server: public Print
 {
 public:
-    //virtual void begin(uint16_t port=0)=0;
+#ifndef XB_ETH
+    virtual void begin(uint16_t port=0)=0;
+#else
     virtual void begin() = 0;
+#endif
 };
 
 #endif

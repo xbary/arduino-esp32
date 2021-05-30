@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "vfs_api.h"
+#include "../../FS/src/vfs_api.h"
 #include "sd_diskio.h"
 #include "ff.h"
-#include "FS.h"
+#include "../../FS/src/FS.h"
 #include "SD.h"
 
 using namespace fs;

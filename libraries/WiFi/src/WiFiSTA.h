@@ -29,6 +29,9 @@
 #ifdef ESP_IDF_VERSION_MAJOR
 #include "esp_event.h"
 #endif
+#ifdef XB_BOARD
+#include <IPv6Address.h>
+#endif
 
 
 class WiFiSTAClass

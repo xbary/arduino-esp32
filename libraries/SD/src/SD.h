@@ -14,7 +14,7 @@
 #ifndef _SD_H_
 #define _SD_H_
 
-#include "FS.h"
+#include "../../FS/src/FS.h"
 #include "SPI.h"
 #include "sd_defines.h"
 

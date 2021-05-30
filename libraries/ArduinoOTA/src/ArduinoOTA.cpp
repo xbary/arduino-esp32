@@ -2,7 +2,9 @@
 #define LWIP_OPEN_SRC
 #endif
 #include <functional>
+#ifdef XB_BOARD
 #include <xb_board_def.h>
+#endif
 #ifdef XB_ETH
 #else
 #include <WiFiUdp.h>
@@ -10,7 +12,7 @@
 #endif
 #include "ArduinoOTA.h"
 #include "MD5Builder.h"
-#include "Update.h"
+#include "../../Update/src/Update.h"
 
 
 // #define OTA_DEBUG Serial

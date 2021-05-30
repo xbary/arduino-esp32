@@ -54,6 +54,7 @@ class String {
         // if the initial value is null or invalid, or if memory allocation
         // fails, the string will be marked as invalid (i.e. "if (s)" will
         // be false).
+        
         String(const char *cstr = "");
         String(const String &str);
         String(const __FlashStringHelper *str);
@@ -292,9 +293,9 @@ class String {
             unsigned char isSSO : 1;
         } __attribute__((packed)); // Ensure that GCC doesn't expand the flag byte to a 32-bit word for alignment issues
 #ifdef BOARD_HAS_PSRAM
-        enum { CAPACITY_MAX = 3145728 }; 
+        enum { CAPACITY_MAX = 3145728 };
 #else
-        enum { CAPACITY_MAX = 65535 }; 
+        enum { CAPACITY_MAX = 65535 };
 #endif
         union {
             struct _ptr ptr;
@@ -317,7 +318,7 @@ class String {
             }
         }
         inline void setCapacity(int cap) { if (!isSSO()) ptr.cap = cap; }
-        inline void setBuffer(char *buff) { if (!isSSO()) ptr.buff = buff; }
+	inline void setBuffer(char *buff) { if (!isSSO()) ptr.buff = buff; }
         // Buffer accessor functions
         inline const char *buffer() const { return (const char *)(isSSO() ? sso.buff : ptr.buff); }
         inline char *wbuffer() const { return isSSO() ? const_cast<char *>(sso.buff) : ptr.buff; } // Writable version of buffer
@@ -370,6 +371,7 @@ class StringSumHelper: public String {
         }
 };
 
+extern int String_OnlyRAM;
 extern const String emptyString;
 
 #endif  // __cplusplus

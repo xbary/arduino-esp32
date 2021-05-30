@@ -128,6 +128,10 @@ String::~String() {
 // /*  Memory Management                        */
 // /*********************************************/
 
+extern "C" void ___free(void* Aptr);
+extern "C" void* ___realloc_psram(void* Aptr, size_t Asize);
+extern "C" void* ___realloc(void* Aptr, size_t Asize);
+
 inline void String::init(void) {
     setSSO(false);
     setBuffer(nullptr);
@@ -137,7 +141,11 @@ inline void String::init(void) {
 
 void String::invalidate(void) {
     if(!isSSO() && wbuffer())
+#ifdef XB_BOARD
+        ___free(wbuffer());
+#else
         free(wbuffer());
+#endif
     init();
 }
 
@@ -159,17 +167,21 @@ unsigned char String::changeBuffer(unsigned int maxStrLen) {
             // Already using SSO, nothing to do
 	    uint16_t oldLen = len();
             setSSO(true);
-            setLen(oldLen);
+	    setLen(oldLen);
             return 1;
         } else { // if bufptr && !isSSO()
             // Using bufptr, need to shrink into sso.buff
             char temp[sizeof(sso.buff)];
             memcpy(temp, buffer(), maxStrLen);
+#ifdef XB_BOARD
+            ___free(wbuffer());
+#else
             free(wbuffer());
+#endif
             uint16_t oldLen = len();
             setSSO(true);
             memcpy(wbuffer(), temp, maxStrLen);
-            setLen(oldLen);
+	        setLen(oldLen);
             return 1;
         }
     }
@@ -180,7 +192,25 @@ unsigned char String::changeBuffer(unsigned int maxStrLen) {
         return false;
     }
     uint16_t oldLen = len();
-    char *newbuffer = (char *) realloc(isSSO() ? nullptr : wbuffer(), newSize);
+    char* newbuffer = NULL;
+    if (String_OnlyRAM > 0)
+    {
+#ifdef XB_BOARD
+        newbuffer = (char*)___realloc(isSSO() ? nullptr : wbuffer(), newSize);
+#else
+        newbuffer = (char*)realloc(isSSO() ? nullptr : wbuffer(), newSize);
+#endif
+    }
+    else
+    {
+#ifdef XB_BOARD
+        newbuffer = (char*)___realloc_psram(isSSO() ? nullptr : wbuffer(), newSize);
+#else
+        newbuffer = (char*)realloc(isSSO() ? nullptr : wbuffer(), newSize);
+#endif
+    }
+    
+
     if (newbuffer) {
         size_t oldSize = capacity() + 1; // include NULL.
         if (isSSO()) {
@@ -234,7 +264,7 @@ void String::move(String &rhs) {
             return;
         } else {
             if (!isSSO()) {
-                free(wbuffer());
+                ___free(wbuffer());
                 setBuffer(nullptr);
             }
         }
@@ -770,7 +800,7 @@ void String::replace(const String& find, const String& replace) {
         while(index >= 0 && (index = lastIndexOf(find, index)) >= 0) {
             readFrom = wbuffer() + index + find.len();
             memmove(readFrom + diff, readFrom, len() - (readFrom - buffer()));
-            int newLen = len() + diff;
+	    int newLen = len() + diff;
             memmove(wbuffer() + index, replace.buffer(), replace.len());
             setLen(newLen);
             wbuffer()[newLen] = 0;
@@ -858,6 +888,7 @@ double String::toDouble(void) const
     return 0.0;
 }
 
+int String_OnlyRAM = 1;
 // global empty string to allow returning const String& with nothing
 
 const String emptyString;
