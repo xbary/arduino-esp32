@@ -30,6 +30,7 @@ typedef enum {
     ARDUINO_USB_CDC_LINE_STATE_EVENT,
     ARDUINO_USB_CDC_LINE_CODING_EVENT,
     ARDUINO_USB_CDC_RX_EVENT,
+    ARDUINO_USB_CDC_TX_EVENT,
     ARDUINO_USB_CDC_MAX_EVENT,
 } arduino_usb_cdc_event_t;
 
@@ -53,6 +54,7 @@ class USBCDC: public Stream
 {
 public:
     USBCDC(uint8_t itf=0);
+    ~USBCDC();
 
     void onEvent(esp_event_handler_t callback);
     void onEvent(arduino_usb_cdc_event_t event, esp_event_handler_t callback);
@@ -110,7 +112,9 @@ public:
     void _onLineState(bool _dtr, bool _rts);
     void _onLineCoding(uint32_t _bit_rate, uint8_t _stop_bits, uint8_t _parity, uint8_t _data_bits);
     void _onRX(void);
+    void _onTX(void);
     void _onUnplugged(void);
+    xSemaphoreHandle tx_sem;
     
 protected:
     uint8_t  itf;
@@ -126,7 +130,7 @@ protected:
     
 };
 
-#if ARDUINO_SERIAL_PORT //Serial used for USB CDC
+#if ARDUINO_USB_CDC_ON_BOOT //Serial used for USB CDC
 extern USBCDC Serial;
 #endif
 
